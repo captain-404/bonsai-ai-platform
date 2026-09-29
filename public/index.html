@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bonsai AI Platform</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <header class="topbar"><div><span class="mark">✦</span><strong>Bonsai AI Platform</strong><small>local-first agent operations</small></div><div id="connection" class="connection">Checking local bridge…</div></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">COMMAND CENTER</p><h1>Turn agent work into visible, safe pipelines.</h1><p>Every avatar is backed by a real agent capability. Work is recorded, approvals halt side effects, and evidence survives the run.</p></div><button id="newPipeline" class="primary">+ New pipeline</button></section>
+    <nav class="tabs" aria-label="Platform views"><button class="active" data-view="command">Command center</button><button data-view="chat">Chat</button><button data-view="pipelines">Pipelines</button><button data-view="agents">Agents</button><button data-view="activity">Activity</button></nav>
+
+    <section id="command" class="view active">
+      <div class="world-card"><div class="world-header"><div><p class="eyebrow">LIVE OPERATIONS MAP</p><h2>Garden District</h2></div><p id="runSummary">No active pipeline</p></div><div id="world" class="world" aria-live="polite"></div><p class="world-legend"><span class="dot idle"></span> Idle <span class="dot working"></span> Working <span class="dot waiting"></span> Awaiting approval</p></div>
+      <div class="grid two"><section class="panel"><div class="panel-heading"><div><p class="eyebrow">READY PIPELINE</p><h2 id="pipelineName">—</h2></div><button id="runPipeline" class="primary">Run inspection</button></div><p id="pipelineDescription" class="muted"></p><ol id="steps" class="steps"></ol></section><section class="panel model-job"><p class="eyebrow">BLENDER AGENT ASSIGNMENT</p><h2 id="jobTitle">Repair, inspect, review</h2><p class="muted" id="jobHelp">Meshwright works only on a protected copy. Viewport Critic reviews it independently and can send one corrective loop back.</p><label>Workflow<select id="jobMode"><option value="repair">Detail repair</option><option value="production_optimize">Production optimization</option></select></label><label id="profileLabel" hidden>Production target profile<select id="productionProfile"><option value="unity_mobile_prop">Unity mobile prop</option><option value="unity_pc_prop" selected>Unity PC/console prop</option><option value="unreal_pc_prop">Unreal PC prop</option><option value="hero_asset">Hero/cinematic asset</option><option value="animated_character">Animated character</option></select></label><p id="profileSummary" class="profile-summary" hidden></p><label>Model source path<input id="modelPath" value="C:\Users\Paran\OneDrive\Documents\ChatGPT\Catmurai game\artifacts\bleep-refined\Bleep-Final\Bleep_Final.blend"></label><label>Assignment<textarea id="modelInstruction">Inspect the model and fix the most important visible detail issue while preserving its intended style.</textarea></label><div class="agent-pair" id="agentPair"><span>Worker: <strong>Meshwright</strong></span><span>Reviewer: <strong>Viewport Critic</strong></span></div><div class="row"><button id="assignModel" class="primary">Assign Blender job</button><span id="modelJobState" class="muted"></span></div><div id="modelJobList" class="job-list"></div></section></div>
+    </section>
+
+    <section id="chat" class="view"><div class="section-title"><div><p class="eyebrow">NORMAL CHAT</p><h2>Talk directly with Bonsai</h2></div></div><section class="panel"><p class="muted">This is a direct conversation with Bonsai. It does not open Blender, create a protected model copy, or start an agent pipeline.</p><label>Your message<textarea id="chatPrompt" placeholder="Ask Bonsai anything…"></textarea></label><div class="row"><button id="sendChat" class="primary">Send message</button><span id="chatState" class="muted"></span></div><div id="chatResponse" class="job-list" aria-live="polite"><p class="muted">No messages sent yet.</p></div></section></section>
+
+    <section id="pipelines" class="view"><div class="section-title"><div><p class="eyebrow">PIPELINE LIBRARY</p><h2>Reusable workflows</h2></div><button id="newPipeline2" class="primary">+ New pipeline</button></div><div id="pipelineList" class="pipeline-list"></div></section>
+    <section id="agents" class="view"><div class="section-title"><div><p class="eyebrow">AGENT REGISTRY</p><h2>Specialists and scopes</h2></div></div><div id="agentList" class="agent-list"></div></section>
+    <section id="activity" class="view"><div class="section-title"><div><p class="eyebrow">AUDIT TRAIL</p><h2>Recent activity</h2></div></div><div id="activityList" class="activity-list"></div></section>
+  </main>
+  <dialog id="pipelineDialog"><form method="dialog" id="pipelineForm"><button class="close" value="cancel" aria-label="Close">×</button><p class="eyebrow">NEW PIPELINE</p><h2>Create a review workflow</h2><label>Name<input id="newPipelineName" required placeholder="e.g. Video QA handoff"></label><label>Description<textarea id="newPipelineDescription" placeholder="What evidence should this workflow produce?"></textarea></label><div class="row end"><button value="cancel" class="secondary">Cancel</button><button class="primary" value="default">Create pipeline</button></div></form></dialog>
+  <script src="/app.js"></script>
+</body>
+</html>
