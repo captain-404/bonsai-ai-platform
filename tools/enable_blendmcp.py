@@ -2,7 +2,8 @@ import bpy
 import traceback
 from pathlib import Path
 
-log = Path(r"C:\Users\Paran\OneDrive\Documents\ChatGPT\AI Platform\data\blendmcp-startup.log")
+log = Path(__file__).resolve().parent.parent / "data" / "blendmcp-startup.log"
+log.parent.mkdir(parents=True, exist_ok=True)
 try:
     bpy.ops.preferences.addon_enable(module="blendmcp_addon")
     result = bpy.ops.blendermcp.start_server()

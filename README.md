@@ -7,6 +7,10 @@ A local creative workspace for personalized agents, persistent tasks, and review
 Install dependencies with `pnpm install`, then double-click `Start-BonsaiAIPlatform.cmd`, or run `node server.js` (Node 20+).
 Open http://127.0.0.1:4176. Stop an older server before starting another copy.
 
+## Configuration
+
+Machine-specific paths (Blender, Unity MCP server, Unity Hub/editors, default Unity and Unreal projects) and the port live in `bonsai.config.json`. Copy `bonsai.config.example.json` to `bonsai.config.json` and edit it; the file is git-ignored. Environment variables (`PORT`, `BLENDER_EXE`, `BONSAI_UNITY_MCP`, `BONSAI_UNITY_BRIDGE_PORT`, `BONSAI_UNITY_HUB`, `BONSAI_UNITY_EDITOR_ROOT`, `BONSAI_CONFIG`) override the file. Without a file, the previous defaults apply. The launcher uses `NODE_RUNTIME`, then `node` on PATH, then Pinokio's Node.
+
 ## Create an agent
 
 Choose **Create agent**, select a specialty, then set its name, icon or image, color and instructions. Save it and select **Assign task**. Agents can be edited, duplicated, archived and restored. A task keeps the agent configuration it started with, even if the agent is later renamed. Advanced defaults include an optional local model override.

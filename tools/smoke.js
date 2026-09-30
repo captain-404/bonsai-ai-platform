@@ -5,7 +5,7 @@ const { execute } = require('../lib/adapters');
 async function main() {
   const dir = path.resolve('data', 'verification', 'blender-smoke'); fs.mkdirSync(dir, { recursive: true });
   const source = path.join(dir, 'fixture.blend');
-  const result = spawnSync(process.env.BLENDER_EXE || 'D:\\blender.exe', ['--background', '--factory-startup', '--disable-autoexec', '--python', path.resolve('tools/create_test_model.py'), '--', source], { windowsHide: true, timeout: 60000, encoding: 'utf8' });
+  const result = spawnSync(require('../lib/config').blenderExe, ['--background', '--factory-startup', '--disable-autoexec', '--python', path.resolve('tools/create_test_model.py'), '--', source], { windowsHide: true, timeout: 60000, encoding: 'utf8' });
   if (result.status !== 0) throw new Error(result.stderr || result.stdout || result.error?.message);
   const outputs = path.join(dir, 'outputs'); fs.mkdirSync(outputs, { recursive: true });
   const job = { agent: { name: 'Fixture inspector' }, action: 'cleanup', sourcePath: source, artifacts: [] };

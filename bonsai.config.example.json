@@ -1,0 +1,12 @@
+{
+  "port": 4176,
+  "blenderExe": "D:\\blender.exe",
+  "unityMcpPath": "D:\\YoutubeChannel\\tools\\unity-mcp-server\\src\\index.js",
+  "unityBridgePort": "7890",
+  "unityHubPath": "C:\\Program Files\\Unity Hub\\Unity Hub.exe",
+  "unityEditorRoot": "C:\\Program Files\\Unity\\Hub\\Editor",
+  "projects": {
+    "unity": "D:\\YoutubeChannel\\catmurai\\unity",
+    "unreal": "D:\\YoutubeChannel\\catmurai-unreal"
+  }
+}
