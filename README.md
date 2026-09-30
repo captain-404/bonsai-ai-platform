@@ -1,32 +1,64 @@
 # Bonsai AI Platform
 
-A local-first agent operations room for visualizing specialist agents, assembling reusable pipelines, and recording approvals and evidence.
+A local creative workspace for personalized agents, persistent tasks, and reviewable outputs.
 
-## Run
+## Start
 
-Double-click `Start-BonsaiAIPlatform.cmd`, or run it from PowerShell:
+Install dependencies with `pnpm install`, then double-click `Start-BonsaiAIPlatform.cmd`, or run `node server.js` (Node 20+).
+Open http://127.0.0.1:4176. Stop an older server before starting another copy.
 
-```powershell
-.\Start-BonsaiAIPlatform.cmd
-```
+## Create an agent
 
-It launches the local service and opens `http://127.0.0.1:4176`. If Node is already on your PATH, `node server.js` also works.
+Choose **Create agent**, select a specialty, then set its name, icon or image, color and instructions. Save it and select **Assign task**. Agents can be edited, duplicated, archived and restored. A task keeps the agent configuration it started with, even if the agent is later renamed. Advanced defaults include an optional local model override.
 
-The default **Blender → Unity asset inspection** pipeline is intentionally non-destructive. It pauses at the approval step and records activity before proceeding. The Bonsai bridge invokes the existing CLI only when `C:\AI\Bonsai2\desktop\BonsaiAgentCli.py` exists; set `BONSAI_AGENT_CLI` if it lives elsewhere.
+- **Custom assistant / Task planner:** use the local model to produce text. These tasks have no tool or filesystem access.
+- **Image / Video / 3D / Voice / Music:** use an imported ComfyUI workflow. Import a tested API-format JSON graph under Workflows and map its prompt node/input. Models and custom nodes must already exist in ComfyUI. Other parameters remain as exported in the graph.
+- **Model polisher:** inspect a .blend copy or remove loose vertices/edges from eligible meshes. This does not perform arbitrary natural-language edits, retopology, rigging, decimation or export. Rigged, linked, shared or modified meshes are skipped for cleanup.
+- **Model inspector:** inspection only, enforced in the runner. A reviewer cannot request cleanup.
+- **Unity / Unreal project scout:** inspect project metadata. These scouts remain metadata-only; use the MCP developer specialists below for editor work.
 
-## Two-agent Blender jobs
+## Connections
 
-Use **Assign Blender job** in the Command Center. It copies the selected `.blend` source into `data/model-runs/<job-id>/`, opens only that copy in Blender, then runs the agents in this order:
+Use Connections to set the local model address/name and ComfyUI address, then check connectivity. Only local HTTP services are supported. Defaults are model port 8080 with model `bonsai2`, and ComfyUI port 8188.
 
-1. **Meshwright** inspects and repairs the active working copy.
-2. **Viewport Critic** independently inspects it without editing.
-3. If the reviewer returns `REASSIGN`, one bounded corrective pass returns to Meshwright. A second unresolved re-assignment stops for human review.
+Blender defaults to `D:\blender.exe`; set `BLENDER_EXE` before starting the server to override it. Each model job uses a separate background process, fixed scripts and a task-local .blend copy. Auto-execution is disabled. A changed copy is reopened in another process and measured before being offered for visual review.
 
-The original source is never opened for saving by the agent prompts. The active Blender session needs the existing BlendMCP companion enabled, and the Bonsai local model must be running.
+## Tasks and outputs
 
-## Safety model
+Under **Workflows**, create a sequence of up to eight agents. Each step can use the original brief, the preceding text result, or a preceding saved Blender copy. Outputs requiring review pause the sequence; accepting them releases the next step. The included **Brief → polished draft** workflow runs real local-model tasks. Workflow runs stop safely after a server restart; automatic replay and arbitrary media uploads between steps are not implemented.
 
-- Agent capability names are visible in the registry.
-- Pipeline events are persisted in `data/platform-state.json`.
-- Approval steps block downstream work.
-- The included workflow produces inspection evidence only; it does not edit Blender files, export assets, alter Unity projects, or auto-run code.
+Under **Projects**, register an existing Unity or Unreal project. Bonsai identifies its version and finds a matching Unity Hub editor when available. An editor path is configuration, not proof of a live editor connection. The Inspect project action creates a metadata inspection task.
+
+Tasks run serially to reduce resource conflicts. The task list supports cancellation and retries of stopped local tasks. ComfyUI cancellation removes only an owned queued prompt; if it is already executing, Bonsai waits for it to finish without interrupting shared work. Uncertain or interrupted ComfyUI submissions must be checked in ComfyUI before creating a replacement task.
+
+Text results and generated artifacts appear in Output library. Image, video and audio outputs have previews; 3D files can be downloaded. Media and modified model outputs require user review. Saved checksums establish file identity, not visual quality or engine readiness.
+
+## Persistence and migration
+
+Existing agents and six historical Blender jobs are preserved when opening the existing data directory. Legacy timer pipeline runs are labelled demonstrations and cannot be executed as real work. The old arbitrary-code Bonsai Blender bridge is no longer called.
+
+Data remains in `data/` by default. Set `BONSAI_DATA_DIR` to choose another runtime folder. Prefer a local folder outside cloud synchronization for sustained use. State writes use a temporary file, flush and atomic replacement, plus a previous-state backup; the first migration creates a separate pre-v2 backup. Invalid state stops startup without replacing the original. One process may own a data directory at a time. Restarted unfinished tasks become interrupted rather than silently repeating side effects.
+
+This remains a single-machine application. SQLite migration and external-job reconciliation are tracked in IMPLEMENTATION_STATUS.md.
+
+## Verification
+
+- `node --test`: isolated API, storage, queue, permission and ComfyUI-protocol tests. No production model files are used.
+- `node tools/smoke.js`: real Blender test using a disposable generated mesh in `data/verification/blender-smoke`. Verifies cleanup, source preservation and saved-file reopen.
+
+See BONSAI_ENHANCEMENT_PLAN.md for the full roadmap and IMPLEMENTATION_STATUS.md for delivered features, verification evidence and remaining work.
+
+## MCP specialists and chat (0.3)
+
+- **Mosaic 🎨**: official ComfyUI MCP 0.10.0 with comfy-cli 1.21.0. Discovers models/nodes, saves API graphs, runs workflows, retrieves output files. Generation depends on installed weights and nodes; 3D generation has not yet been validated.
+- **Pixel 🎮**: Unity MCP with all advertised tools, including script editing, C# execution, scene edits, play/build and advanced tool discovery. Default project: `D:\YoutubeChannel\catmurai\unity`.
+- **Atlas 💠**: Unreal native MCP with full toolset discovery/execution at `http://127.0.0.1:8000/mcp`. Default project: `D:\YoutubeChannel\catmurai-unreal`.
+- **Chat**: persistent separate conversations using the local model, without tool access.
+
+All names, icons, instructions and project defaults remain editable. Engine editors must be open with their MCP bridges enabled. Tools execute with the local server account permissions; this is full project access, not an isolated project copy. The agent is instructed to verify the active project before edits. Tool journals and saved task outputs are downloadable. Stop does not roll back edits or guarantee cancellation of an external render/build. Automatic retries are disabled after an external call has started. Tasks have a 24-round / 40-call budget; larger games require multiple focused tasks.
+
+The MCP runtime is ignored under `.runtime/comfy-mcp`. To recreate it on Windows, create a Python 3.10+ venv there and install `comfy-mcp==0.10.0 comfy-cli==1.21.0`. Run its `comfy.exe set-default` pointing to your ComfyUI app directory. This machine uses `D:\AI-Lab\Apps\api\comfy.git\app`; Pinokio owns startup through `C:\AI-Lab\Apps\api\comfy.git\start.js`. Unity MCP defaults to the existing sibling workspace server; override with `BONSAI_UNITY_MCP`. Unreal address is editable in Connections.
+
+Connection checks verified 39 ComfyUI tools, 80 Unity tools (plus advanced discovery), and 824 Unreal tools indexed through its 3 discovery/dispatch entry points. These counts are entry points, not restrictions. Heavy generation and editors share the GPU with the local language model; GPU-aware scheduling remains future work.
+
+Local inference is serialized across Q&A and text/MCP tasks. `tools/start-model.ps1` starts the configured Bonsai model with one inference slot; the previous four-slot configuration hit context errors during concurrent checks. Unreal tools are indexed before agent work and search exposes exact callable schemas. Live Unreal MCP returned the SurvivalArena level and its actors.
