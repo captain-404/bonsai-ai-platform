@@ -1,0 +1,614 @@
+{
+ "id": "kontext-turnaround",
+ "name": "Turnaround sheet \u00b7 Flux Kontext (12 GB)",
+ "media": "image",
+ "description": "Describe one item or character in words; the agent draws the front view (Flux schnell, 4 steps), then Flux Kontext redraws that same object from the left, back and right, and the four views are stitched into a 2\u00d72 turnaround sheet (front, left / back, right) for the 3D agent. Every view is one item on pure white with no labels. Needs the Kontext model file (about 12 GB, see requires). Roughly 3\u20136 min per side view on an RTX 3060. Or upload your own front-view picture and only the side views are generated.",
+ "requires": {
+  "models": [
+   "diffusion_models/flux1-dev-kontext_fp8_scaled",
+   "checkpoints/flux1-schnell-fp8 (text encoder and VAE)"
+  ]
+ },
+ "graph": {
+  "1": {
+   "class_type": "CheckpointLoaderSimple",
+   "inputs": {
+    "ckpt_name": "flux1-schnell-fp8.safetensors"
+   }
+  },
+  "2": {
+   "class_type": "UNETLoader",
+   "inputs": {
+    "unet_name": "flux1-dev-kontext_fp8_scaled.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  "4": {
+   "class_type": "FluxKontextImageScale",
+   "inputs": {
+    "image": [
+     "63",
+     0
+    ]
+   }
+  },
+  "5": {
+   "class_type": "VAEEncode",
+   "inputs": {
+    "pixels": [
+     "4",
+     0
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "6": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "text": "",
+    "clip": [
+     "1",
+     1
+    ]
+   }
+  },
+  "7": {
+   "class_type": "ConditioningZeroOut",
+   "inputs": {
+    "conditioning": [
+     "6",
+     0
+    ]
+   }
+  },
+  "10": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "text": "",
+    "clip": [
+     "1",
+     1
+    ]
+   }
+  },
+  "11": {
+   "class_type": "ReferenceLatent",
+   "inputs": {
+    "conditioning": [
+     "10",
+     0
+    ],
+    "latent": [
+     "5",
+     0
+    ]
+   }
+  },
+  "12": {
+   "class_type": "FluxGuidance",
+   "inputs": {
+    "guidance": 2.5,
+    "conditioning": [
+     "11",
+     0
+    ]
+   }
+  },
+  "13": {
+   "class_type": "KSampler",
+   "inputs": {
+    "seed": 101,
+    "steps": 20,
+    "cfg": 1,
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "denoise": 1,
+    "model": [
+     "2",
+     0
+    ],
+    "positive": [
+     "12",
+     0
+    ],
+    "negative": [
+     "7",
+     0
+    ],
+    "latent_image": [
+     "5",
+     0
+    ]
+   }
+  },
+  "14": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "13",
+     0
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "15": {
+   "class_type": "SaveImage",
+   "inputs": {
+    "filename_prefix": "sheets/x",
+    "images": [
+     "14",
+     0
+    ]
+   }
+  },
+  "20": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "text": "",
+    "clip": [
+     "1",
+     1
+    ]
+   }
+  },
+  "21": {
+   "class_type": "ReferenceLatent",
+   "inputs": {
+    "conditioning": [
+     "20",
+     0
+    ],
+    "latent": [
+     "5",
+     0
+    ]
+   }
+  },
+  "22": {
+   "class_type": "FluxGuidance",
+   "inputs": {
+    "guidance": 2.5,
+    "conditioning": [
+     "21",
+     0
+    ]
+   }
+  },
+  "23": {
+   "class_type": "KSampler",
+   "inputs": {
+    "seed": 102,
+    "steps": 20,
+    "cfg": 1,
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "denoise": 1,
+    "model": [
+     "2",
+     0
+    ],
+    "positive": [
+     "22",
+     0
+    ],
+    "negative": [
+     "7",
+     0
+    ],
+    "latent_image": [
+     "5",
+     0
+    ]
+   }
+  },
+  "24": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "23",
+     0
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "25": {
+   "class_type": "SaveImage",
+   "inputs": {
+    "filename_prefix": "sheets/x",
+    "images": [
+     "24",
+     0
+    ]
+   }
+  },
+  "30": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "text": "",
+    "clip": [
+     "1",
+     1
+    ]
+   }
+  },
+  "31": {
+   "class_type": "ReferenceLatent",
+   "inputs": {
+    "conditioning": [
+     "30",
+     0
+    ],
+    "latent": [
+     "5",
+     0
+    ]
+   }
+  },
+  "32": {
+   "class_type": "FluxGuidance",
+   "inputs": {
+    "guidance": 2.5,
+    "conditioning": [
+     "31",
+     0
+    ]
+   }
+  },
+  "33": {
+   "class_type": "KSampler",
+   "inputs": {
+    "seed": 103,
+    "steps": 20,
+    "cfg": 1,
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "denoise": 1,
+    "model": [
+     "2",
+     0
+    ],
+    "positive": [
+     "32",
+     0
+    ],
+    "negative": [
+     "7",
+     0
+    ],
+    "latent_image": [
+     "5",
+     0
+    ]
+   }
+  },
+  "34": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "33",
+     0
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "35": {
+   "class_type": "SaveImage",
+   "inputs": {
+    "filename_prefix": "sheets/x",
+    "images": [
+     "34",
+     0
+    ]
+   }
+  },
+  "50": {
+   "class_type": "ImageStitch",
+   "inputs": {
+    "image1": [
+     "4",
+     0
+    ],
+    "image2": [
+     "14",
+     0
+    ],
+    "direction": "right",
+    "match_image_size": true,
+    "spacing_width": 0,
+    "spacing_color": "white"
+   }
+  },
+  "51": {
+   "class_type": "ImageStitch",
+   "inputs": {
+    "image1": [
+     "24",
+     0
+    ],
+    "image2": [
+     "34",
+     0
+    ],
+    "direction": "right",
+    "match_image_size": true,
+    "spacing_width": 0,
+    "spacing_color": "white"
+   }
+  },
+  "52": {
+   "class_type": "ImageStitch",
+   "inputs": {
+    "image1": [
+     "50",
+     0
+    ],
+    "image2": [
+     "51",
+     0
+    ],
+    "direction": "down",
+    "match_image_size": true,
+    "spacing_width": 0,
+    "spacing_color": "white"
+   }
+  },
+  "53": {
+   "class_type": "SaveImage",
+   "inputs": {
+    "filename_prefix": "sheets/x_sheet",
+    "images": [
+     "52",
+     0
+    ]
+   }
+  },
+  "60": {
+   "class_type": "EmptySD3LatentImage",
+   "inputs": {
+    "width": 1024,
+    "height": 1024,
+    "batch_size": 1
+   }
+  },
+  "61": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "text": "",
+    "clip": [
+     "1",
+     1
+    ]
+   }
+  },
+  "62": {
+   "class_type": "KSampler",
+   "inputs": {
+    "seed": 100,
+    "steps": 4,
+    "cfg": 1,
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "denoise": 1,
+    "model": [
+     "1",
+     0
+    ],
+    "positive": [
+     "61",
+     0
+    ],
+    "negative": [
+     "7",
+     0
+    ],
+    "latent_image": [
+     "60",
+     0
+    ]
+   }
+  },
+  "63": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "62",
+     0
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "64": {
+   "class_type": "SaveImage",
+   "inputs": {
+    "filename_prefix": "sheets/x_front",
+    "images": [
+     "63",
+     0
+    ]
+   }
+  },
+  "3": {
+   "class_type": "LoadImage",
+   "inputs": {
+    "image": "example.png"
+   }
+  }
+ },
+ "inputs": [
+  {
+   "id": "reference",
+   "label": "Optional: your own front-view picture (leave empty to have the agent draw the front view from your description)",
+   "kind": "image",
+   "node": "3",
+   "input": "image",
+   "optional": true,
+   "whenGiven": {
+    "set": [
+     {
+      "node": "4",
+      "input": "image",
+      "value": [
+       "3",
+       0
+      ]
+     }
+    ],
+    "drop": [
+     "60",
+     "61",
+     "62",
+     "63",
+     "64"
+    ]
+   },
+   "whenMissing": {
+    "drop": [
+     "3"
+    ]
+   }
+  }
+ ],
+ "params": [
+  {
+   "key": "seed",
+   "label": "Seed (blank keeps defaults)",
+   "type": "int",
+   "default": "",
+   "targets": [
+    {
+     "node": "13",
+     "input": "seed"
+    },
+    {
+     "node": "23",
+     "input": "seed"
+    },
+    {
+     "node": "33",
+     "input": "seed"
+    },
+    {
+     "node": "62",
+     "input": "seed"
+    }
+   ]
+  },
+  {
+   "key": "steps",
+   "label": "Steps per side view (the front view always uses 4)",
+   "type": "int",
+   "default": 20,
+   "min": 8,
+   "max": 40,
+   "targets": [
+    {
+     "node": "13",
+     "input": "steps"
+    },
+    {
+     "node": "23",
+     "input": "steps"
+    },
+    {
+     "node": "33",
+     "input": "steps"
+    }
+   ]
+  },
+  {
+   "key": "guidance",
+   "label": "Guidance (2.5 default; lower follows the picture more loosely)",
+   "type": "number",
+   "default": 2.5,
+   "min": 1,
+   "max": 6,
+   "targets": [
+    {
+     "node": "12",
+     "input": "guidance"
+    },
+    {
+     "node": "22",
+     "input": "guidance"
+    },
+    {
+     "node": "32",
+     "input": "guidance"
+    }
+   ]
+  }
+ ],
+ "promptTemplates": [
+  {
+   "node": "61",
+   "input": "text",
+   "template": "{subject}, front view, the whole object centered in frame, straight orthographic view, flat even lighting, pure white background, clean game asset concept art, exactly one single item, no other objects, no text, no labels, no shadows"
+  },
+  {
+   "node": "10",
+   "input": "text",
+   "template": "This picture shows {subject}. Show this exact same object in a left side view (we see the object's left side, camera turned 90 degrees). Full object in frame, straight orthographic view, flat even lighting, pure white background. Keep the identical design, shapes, colors, materials and proportions. Exactly one item, no other objects, no text, no labels, no arrows, no shadows."
+  },
+  {
+   "node": "20",
+   "input": "text",
+   "template": "This picture shows {subject}. Show this exact same object in a back view (camera directly behind it). Full object in frame, straight orthographic view, flat even lighting, pure white background. Keep the identical design, shapes, colors, materials and proportions. Exactly one item, no other objects, no text, no labels, no arrows, no shadows."
+  },
+  {
+   "node": "30",
+   "input": "text",
+   "template": "This picture shows {subject}. Show this exact same object in a right side view (we see the object's right side, camera turned 90 degrees). Full object in frame, straight orthographic view, flat even lighting, pure white background. Keep the identical design, shapes, colors, materials and proportions. Exactly one item, no other objects, no text, no labels, no arrows, no shadows."
+  }
+ ],
+ "namePrefixes": [
+  {
+   "node": "53",
+   "input": "filename_prefix",
+   "template": "sheets/{name}_sheet"
+  },
+  {
+   "node": "15",
+   "input": "filename_prefix",
+   "template": "sheets/{name}_views/left"
+  },
+  {
+   "node": "25",
+   "input": "filename_prefix",
+   "template": "sheets/{name}_views/back"
+  },
+  {
+   "node": "35",
+   "input": "filename_prefix",
+   "template": "sheets/{name}_views/right"
+  },
+  {
+   "node": "64",
+   "input": "filename_prefix",
+   "template": "sheets/{name}_views/front"
+  }
+ ],
+ "handoff": {
+  "label": "Make 3D model \u2192",
+  "presetId": "pixal3d-single",
+  "match": "_front_"
+ },
+ "agentTemplate": "sheet",
+ "agentName": "Prism",
+ "promptNode": "61",
+ "promptInput": "text"
+}

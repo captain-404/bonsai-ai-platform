@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "test": "node --test",
-    "test:blender": "node tools/smoke.js"
+    "test:blender": "node tools/smoke.js",
+    "verify:presets": "node tools/verify-presets.js"
   },
   "engines": {
     "node": ">=20"

@@ -66,3 +66,31 @@ The MCP runtime is ignored under `.runtime/comfy-mcp`. To recreate it on Windows
 Connection checks verified 39 ComfyUI tools, 80 Unity tools (plus advanced discovery), and 824 Unreal tools indexed through its 3 discovery/dispatch entry points. These counts are entry points, not restrictions. Heavy generation and editors share the GPU with the local language model; GPU-aware scheduling remains future work.
 
 Local inference is serialized across Q&A and text/MCP tasks. `tools/start-model.ps1` starts the configured Bonsai model with one inference slot; the previous four-slot configuration hit context errors during concurrent checks. Unreal tools are indexed before agent work and search exposes exact callable schemas. Live Unreal MCP returned the SurvivalArena level and its actors.
+
+## Presets: the ready-made workflows
+Files in `presets/` appear on the Workflows page. Add one with **Add to Bonsai**, then **Create agent** on the same card. When a preset file changes in a new version, its card shows **Update available**; the button refreshes the saved copy in place and your agents keep it.
+
+| Preset | What it does |
+| --- | --- |
+| Front view · Flux schnell | Text to one front-view picture, under a minute. Hands off to the single-image 3D preset. |
+| Turnaround sheet · Flux Kontext | Text (or your own front picture) to a 2×2 sheet. Needs the Kontext model file. |
+| 3D asset · Pixal3D single image | One front picture to a textured GLB. Back and sides are guessed. |
+| 3D asset · Pixal3D multiview | A 4-view sheet to a textured GLB. |
+
+The hand-off button on an accepted result ("Make 3D model →") adds the next preset and creates its agent when they are missing. A GLB that is accepted also gets **Game prep →**, which opens the Model polisher with the file filled in and reduces it to a triangle target (default 60,000) in a separate Blender copy; the saved file is reopened and measured again before it is offered for review. Game prep keeps the existing UVs and texture; it does not re-bake.
+
+### Writing a preset
+A preset is one JSON file: `id`, `name`, `media` (`image` / `model` / ...), `description`, `requires` (model files, shown on the card), the ComfyUI API-format `graph`, and optional parts:
+
+- `inputs`: pictures the task form asks for (`kind: "image"` or `"sheet"`; `optional: true` with `whenGiven` / `whenMissing` to change or drop nodes).
+- `params`: settings on the form; each lists `targets` (`node` and `input` to overwrite). `local: true` marks one that the adapter handles itself.
+- `promptNode` / `promptTemplates`: where the task text goes; `{subject}` and `{prompt}` are replaced.
+- `namePrefixes`: output file name prefixes, `{name}` is the asset name.
+- `handoff`: `{ label, presetId, match, params }`, the button shown on results whose label contains `match`.
+- `agentTemplate` / `agentName`: the specialist the card creates.
+
+Run `npm run verify:presets` (ComfyUI running) to check every preset's node types and model files against your ComfyUI before spending a long run on it. `npm test` covers the graph wiring and the task flow without ComfyUI.
+
+## Working while ComfyUI is busy
+Chat waits while ComfyUI is generating, because the local model and ComfyUI share one GPU. A running ComfyUI task shows its queue position and elapsed time; if Bonsai restarts mid-task, **Reattach to ComfyUI** on the interrupted task picks up the job ComfyUI kept instead of submitting it again. **Clear old tasks…** at the bottom of the Tasks page frees disk space from old finished tasks and unused uploads; tasks waiting for review are never touched.
+

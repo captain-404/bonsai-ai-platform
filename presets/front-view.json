@@ -1,0 +1,158 @@
+{
+  "id": "front-view",
+  "name": "Front view \u00b7 Flux schnell (fast)",
+  "media": "image",
+  "description": "Describe one item or character in words and get a single front-view picture in under a minute (Flux schnell, 4 steps), one item on pure white with no labels. Redo until it looks right, then use \u201cMake 3D model\u2192\u201d: Pixal3D guesses the back and sides. Needs no extra model files.",
+  "requires": {
+    "models": [
+      "checkpoints/flux1-schnell-fp8"
+    ]
+  },
+  "inputs": [],
+  "params": [
+    {
+      "key": "seed",
+      "label": "Seed (blank keeps defaults)",
+      "type": "int",
+      "default": "",
+      "targets": [
+        {
+          "node": "62",
+          "input": "seed"
+        }
+      ]
+    },
+    {
+      "key": "steps",
+      "label": "Steps (4 is what schnell is made for)",
+      "type": "int",
+      "default": 4,
+      "min": 2,
+      "max": 12,
+      "targets": [
+        {
+          "node": "62",
+          "input": "steps"
+        }
+      ]
+    }
+  ],
+  "promptTemplates": [
+    {
+      "node": "61",
+      "input": "text",
+      "template": "{subject}, front view, the whole object centered in frame, straight orthographic view, flat even lighting, pure white background, clean game asset concept art, exactly one single item, no other objects, no text, no labels, no shadows"
+    }
+  ],
+  "namePrefixes": [
+    {
+      "node": "64",
+      "input": "filename_prefix",
+      "template": "sheets/{name}_views/front"
+    }
+  ],
+  "handoff": {
+    "label": "Make 3D model \u2192",
+    "presetId": "pixal3d-single",
+    "match": "_front_"
+  },
+  "agentTemplate": "sheet",
+  "agentName": "Prism Quick",
+  "promptNode": "61",
+  "promptInput": "text",
+  "graph": {
+    "1": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "flux1-schnell-fp8.safetensors"
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "7": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+        "conditioning": [
+          "6",
+          0
+        ]
+      }
+    },
+    "60": {
+      "class_type": "EmptySD3LatentImage",
+      "inputs": {
+        "width": 1024,
+        "height": 1024,
+        "batch_size": 1
+      }
+    },
+    "61": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "62": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 100,
+        "steps": 4,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1,
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "61",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "latent_image": [
+          "60",
+          0
+        ]
+      }
+    },
+    "63": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "62",
+          0
+        ],
+        "vae": [
+          "1",
+          2
+        ]
+      }
+    },
+    "64": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "sheets/x_front",
+        "images": [
+          "63",
+          0
+        ]
+      }
+    }
+  }
+}
